@@ -1,46 +1,72 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/mb-14/gomarkov"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 )
 
-func main() {
-	train := flag.String("train", "", "Train the markov chain on the given username")
-	prompt := flag.String("in", "", "Prompt to generate post")
-	flag.Parse()
-
-	if *train != "" {
-		err := cmdTrain(*train)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		os.Exit(0)
-	}
-
-	chain, err := loadModel()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	err = generateBlogPost(chain, *prompt)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	os.Exit(0)
+var allFlags = []cli.Flag{
+	&cli.StringFlag{
+		Name:     "alias",
+		Usage:    "Alias of the WriteFreely collection to train on",
+		Required: true,
+		Hidden:   false,
+		Aliases:  []string{"c"},
+	},
 }
 
-func cmdTrain(alias string) error {
+func main() {
+	app := &cli.App{
+		Name:   "ChatFreely",
+		Usage:  "Generative \"AI\" that learns from WriteFreely blogs.",
+		Action: cmdTrain,
+		Commands: []*cli.Command{
+			{
+				Name:   "train",
+				Usage:  "Train the markov chain.",
+				Flags:  allFlags,
+				Action: cmdTrain,
+			},
+			{
+				Name:    "generate",
+				Aliases: []string{"gen"},
+				Usage:   "Generate a blog post from training data.",
+				Flags:   allFlags,
+				Action:  cmdGenerate,
+			},
+		},
+	}
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func cmdTrain(ctx *cli.Context) error {
+	alias := ctx.String("alias")
 	chain, err := buildModel(alias)
 	if err != nil {
 		return err
 	}
-	return saveModel(chain)
+	return saveModel(chain, alias)
 }
 
-func generateBlogPost(chain *gomarkov.Chain, prompt string) error {
+func cmdGenerate(ctx *cli.Context) error {
+	alias := ctx.String("alias")
+	chain, err := loadModel(alias)
+	if err != nil {
+		return err
+	}
+	err = generateBlogPost(chain)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func generateBlogPost(chain *gomarkov.Chain) error {
 	tokens := []string{gomarkov.StartToken}
 	for tokens[len(tokens)-1] != gomarkov.EndToken {
 		next, err := chain.Generate(tokens[(len(tokens) - 1):]) //strings.Split(prompt, " "))
@@ -52,13 +78,6 @@ func generateBlogPost(chain *gomarkov.Chain, prompt string) error {
 		}
 		tokens = append(tokens, next)
 	}
-	/*
-		next, err := chain.Generate(strings.Split(prompt, " "))
-		if err != nil {
-			return err
-		}
-		fmt.Print(next + " ")
-	*/
 	//fmt.Println(strings.Join(tokens[1:len(tokens)-1], " "))
 	return nil
 }
