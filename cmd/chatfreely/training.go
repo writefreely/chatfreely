@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mb-14/gomarkov"
-	"github.com/writeas/go-writeas/v2"
+	"github.com/writeas/go-writeas/v3"
 	"log"
 	"os"
 	"strings"
@@ -13,11 +13,19 @@ func fetchBlogPosts(alias string) ([]writeas.Post, error) {
 	log.Printf("Fetching blog posts from '%s'...", alias)
 	c := writeas.NewClient()
 	c.SetApplicationKey(os.Getenv("APP_KEY"))
-	posts, err := c.GetCollectionPosts(alias)
-	if err != nil {
-		return nil, err
+	var posts *[]writeas.Post
+	var allPosts []writeas.Post
+	var err error
+	i := 1
+	for i == 1 || len(*posts) != 0 {
+		posts, err = c.GetCollectionPosts(alias, i)
+		if err != nil {
+			return nil, err
+		}
+		allPosts = append(allPosts, *posts...)
+		i++
 	}
-	return *posts, err
+	return allPosts, err
 }
 
 func buildModel(alias string) (*gomarkov.Chain, error) {
