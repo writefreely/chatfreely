@@ -28,12 +28,12 @@ func fetchBlogPosts(alias string) ([]writeas.Post, error) {
 	return allPosts, err
 }
 
-func buildModel(alias string) (*gomarkov.Chain, error) {
+func buildModel(alias string, order int) (*gomarkov.Chain, error) {
 	posts, err := fetchBlogPosts(alias)
 	if err != nil {
 		return nil, err
 	}
-	chain := gomarkov.NewChain(1)
+	chain := gomarkov.NewChain(order)
 	var wg sync.WaitGroup
 	wg.Add(len(posts))
 	log.Printf("Adding %d posts to markov chain...", len(posts))

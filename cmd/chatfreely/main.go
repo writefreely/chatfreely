@@ -13,8 +13,13 @@ var allFlags = []cli.Flag{
 		Name:     "alias",
 		Usage:    "Alias of the WriteFreely collection to train on",
 		Required: true,
-		Hidden:   false,
 		Aliases:  []string{"c"},
+	},
+	&cli.StringFlag{
+		Name:     "order",
+		Usage:    "Alias of the WriteFreely collection to train on",
+		Required: false,
+		Aliases:  []string{"o"},
 	},
 }
 
@@ -46,7 +51,11 @@ func main() {
 
 func cmdTrain(ctx *cli.Context) error {
 	alias := ctx.String("alias")
-	chain, err := buildModel(alias)
+	order := ctx.Int("order")
+	if order == 0 {
+		order = 1
+	}
+	chain, err := buildModel(alias, order)
 	if err != nil {
 		return err
 	}
@@ -67,9 +76,17 @@ func cmdGenerate(ctx *cli.Context) error {
 }
 
 func generateBlogPost(chain *gomarkov.Chain) error {
+	order := chain.Order
+	if order == 0 {
+		order = 1
+	}
+	log.Printf("Generating post. Order %d", order)
 	tokens := []string{gomarkov.StartToken}
+	for i := 1; i < order; i++ {
+		tokens = append(tokens, gomarkov.StartToken)
+	}
 	for tokens[len(tokens)-1] != gomarkov.EndToken {
-		next, err := chain.Generate(tokens[(len(tokens) - 1):]) //strings.Split(prompt, " "))
+		next, err := chain.Generate(tokens[(len(tokens) - order):])
 		if err != nil {
 			return err
 		}
