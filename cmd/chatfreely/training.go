@@ -18,6 +18,7 @@ func fetchBlogPosts(alias string) ([]writeas.Post, error) {
 	var err error
 	i := 1
 	for i == 1 || len(*posts) != 0 {
+		log.Printf("Page %d...", i)
 		posts, err = c.GetCollectionPosts(alias, i)
 		if err != nil {
 			return nil, err
