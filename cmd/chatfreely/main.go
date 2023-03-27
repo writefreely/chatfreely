@@ -64,7 +64,11 @@ func cmdTrain(ctx *cli.Context) error {
 
 func cmdGenerate(ctx *cli.Context) error {
 	alias := ctx.String("alias")
-	chain, err := loadModel(alias)
+	order := ctx.Int("order")
+	if order == 0 {
+		order = 1
+	}
+	chain, err := loadModel(alias, order)
 	if err != nil {
 		return err
 	}

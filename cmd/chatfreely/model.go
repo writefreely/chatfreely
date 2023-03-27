@@ -9,12 +9,12 @@ import (
 
 const modelFile = "model.json"
 
-func loadModel(name string) (*gomarkov.Chain, error) {
+func loadModel(name string, order int) (*gomarkov.Chain, error) {
 	var chain gomarkov.Chain
-	data, err := os.ReadFile(name + ".json")
+	data, err := os.ReadFile(fmt.Sprintf("%s-%d.json", name, order))
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("Data for '%s' not found. Create training data with: chatfreely gen -c %s", name, name)
+			return nil, fmt.Errorf("Data for '%s' (order %d) not found. Create training data with: chatfreely gen -c %s", name, order, name)
 		}
 		return &chain, err
 	}
@@ -30,5 +30,5 @@ func saveModel(chain *gomarkov.Chain, name string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(name+".json", jsonObj, 0644)
+	return os.WriteFile(fmt.Sprintf("%s-%d.json", name, chain.Order), jsonObj, 0644)
 }
