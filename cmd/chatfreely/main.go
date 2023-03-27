@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"github.com/mb-14/gomarkov"
 	"github.com/urfave/cli/v2"
+	"github.com/writefreely/chatfreely"
 	"log"
 	"os"
 )
@@ -55,7 +54,7 @@ func cmdTrain(ctx *cli.Context) error {
 	if order == 0 {
 		order = 1
 	}
-	chain, err := buildModel(alias, order)
+	chain, err := chatfreely.BuildModel(alias, order)
 	if err != nil {
 		return err
 	}
@@ -72,33 +71,9 @@ func cmdGenerate(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = generateBlogPost(chain)
+	err = chatfreely.GenerateBlogPost(chain)
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func generateBlogPost(chain *gomarkov.Chain) error {
-	order := chain.Order
-	if order == 0 {
-		order = 1
-	}
-	log.Printf("Generating post. Order %d", order)
-	tokens := []string{gomarkov.StartToken}
-	for i := 1; i < order; i++ {
-		tokens = append(tokens, gomarkov.StartToken)
-	}
-	for tokens[len(tokens)-1] != gomarkov.EndToken {
-		next, err := chain.Generate(tokens[(len(tokens) - order):])
-		if err != nil {
-			return err
-		}
-		if next != gomarkov.EndToken {
-			fmt.Print(next + " ")
-		}
-		tokens = append(tokens, next)
-	}
-	//fmt.Println(strings.Join(tokens[1:len(tokens)-1], " "))
 	return nil
 }

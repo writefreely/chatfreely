@@ -1,4 +1,4 @@
-package main
+package chatfreely
 
 import (
 	"github.com/mb-14/gomarkov"
@@ -29,7 +29,8 @@ func fetchBlogPosts(alias string) ([]writeas.Post, error) {
 	return allPosts, err
 }
 
-func buildModel(alias string, order int) (*gomarkov.Chain, error) {
+// BuildModel creates a model with the given order for the given collection alias.
+func BuildModel(alias string, order int) (*gomarkov.Chain, error) {
 	posts, err := fetchBlogPosts(alias)
 	if err != nil {
 		return nil, err
