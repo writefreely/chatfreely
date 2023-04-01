@@ -6,9 +6,7 @@ It uses a [Markov chain](https://en.wikipedia.org/wiki/Markov_chain) to generate
 
 ## Limitations
 
-_For now, it only works with Write.as._
-
-Otherwise, like most modern "AI" tools:
+Like most modern "AI" tools:
 
 * ChatFreely will confidently poop out language without any concern for truth or reality. It has no capacity for any kind of logical inference that would allow it to understand truth as humans do.
 * It will produce instructions and content based on the data it was trained on, for better or worse.
@@ -71,9 +69,10 @@ USAGE:
    chatfreely train [command options] [arguments...]
 
 OPTIONS:
-   --alias value, -c value  Alias of the WriteFreely collection to train on
-   --order value, -o value  Markov chain order (recommend 1 or 2)
-   --help, -h               show help
+   --alias value, -c value     Alias of the WriteFreely collection to train on
+   --instance value, -i value  WriteFreely instance to train on
+   --order value, -o value     Markov chain order (recommend 1 or 2)
+   --help, -h                  show help
 ```
 
 ### generate
@@ -85,7 +84,8 @@ USAGE:
    chatfreely generate [command options] [arguments...]
 
 OPTIONS:
-   --alias value, -c value  Alias of the WriteFreely collection
-   --order value, -o value  Markov chain order (same as training)
-   --help, -h               show help
+   --alias value, -c value     Alias of the WriteFreely collection to train on
+   --instance value, -i value  WriteFreely instance to train on
+   --order value, -o value     Markov chain order (same as training)
+   --help, -h                  show help
 ```

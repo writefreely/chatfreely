@@ -15,6 +15,12 @@ var allFlags = []cli.Flag{
 		Aliases:  []string{"c"},
 	},
 	&cli.StringFlag{
+		Name:     "instance",
+		Usage:    "WriteFreely instance to train on",
+		Required: false,
+		Aliases:  []string{"i"},
+	},
+	&cli.StringFlag{
 		Name:     "order",
 		Usage:    "Markov chain order",
 		Required: false,
@@ -50,11 +56,12 @@ func main() {
 
 func cmdTrain(ctx *cli.Context) error {
 	alias := ctx.String("alias")
+	instance := ctx.String("instance")
 	order := ctx.Int("order")
 	if order == 0 {
 		order = 1
 	}
-	chain, err := chatfreely.BuildModel(alias, order)
+	chain, err := chatfreely.BuildModel(alias, instance, order)
 	if err != nil {
 		return err
 	}

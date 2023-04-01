@@ -4,18 +4,43 @@ import (
 	"github.com/mb-14/gomarkov"
 	"github.com/writeas/go-writeas/v3"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
 )
 
-func fetchBlogPosts(alias string) ([]writeas.Post, error) {
-	log.Printf("Fetching blog posts from '%s'...", alias)
-	c := writeas.NewClient()
-	c.SetApplicationKey(os.Getenv("WRITEAS_APP_KEY"))
+const writeasURL = "https://write.as"
+
+func fetchBlogPosts(alias, instance string) ([]writeas.Post, error) {
+	// Normalize and correctly parse instance
+	if instance == "" {
+		instance = writeasURL
+	}
+	if !strings.HasPrefix(instance, "http") {
+		instance = "https://" + instance
+	}
+	host, err := url.Parse(instance)
+	if err != nil {
+		return nil, err
+	}
+	host.Path = "/api"
+
+	// Set up WriteFreely API client
+	log.Printf("Fetching blog posts from '%s' on %s (via %s)...", alias, host.Host, host.String())
+	var c *writeas.Client
+	if instance == writeasURL {
+		c = writeas.NewClient()
+		// Write.as requires an application key to get around rate limiting
+		c.SetApplicationKey(os.Getenv("WRITEAS_APP_KEY"))
+	} else {
+		c = writeas.NewClientWith(writeas.Config{
+			URL: host.String(),
+		})
+	}
+
 	var posts *[]writeas.Post
 	var allPosts []writeas.Post
-	var err error
 	i := 1
 	for i == 1 || len(*posts) != 0 {
 		log.Printf("Page %d...", i)
@@ -30,8 +55,8 @@ func fetchBlogPosts(alias string) ([]writeas.Post, error) {
 }
 
 // BuildModel creates a model with the given order for the given collection alias.
-func BuildModel(alias string, order int) (*gomarkov.Chain, error) {
-	posts, err := fetchBlogPosts(alias)
+func BuildModel(alias, instance string, order int) (*gomarkov.Chain, error) {
+	posts, err := fetchBlogPosts(alias, instance)
 	if err != nil {
 		return nil, err
 	}
