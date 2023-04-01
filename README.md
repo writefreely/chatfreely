@@ -22,12 +22,18 @@ go get github.com/writefreely/chatfreely
 
 ### Training
 
-Next train the "AI" on your Write.as blog with the following command, replacing `[blog-alias]` with your own.
+Next train the "AI" on your WriteFreely blog with the following command, replacing `[instance-url]` and `[blog-alias]` with your own.
 
 The `-o` flag sets the order of your Markov model -- setting it to `2` makes it more coherent; setting it to `1` makes it more unhinged but more original.
 
 ```bash
-chatfreely train -c [blog-alias] -o 2
+chatfreely train -i [instance-url] -c [blog-alias] -o 2
+```
+
+For example:
+
+```bash
+chatfreely train -i write.as -c blog -o 2
 ```
 
 #### Using with Write.as
@@ -39,7 +45,7 @@ Write.as implements rate-limiting on its post-retrieval API that [requires an ap
 Finally, generate a brand new post, again specifying the order (`-o`) that you used to train the model:
 
 ```bash
-chatfreely gen -c [blog-alias] -o 2
+chatfreely gen -i [instance-url] -c [blog-alias] -o 2
 ```
 
 ## Commands
