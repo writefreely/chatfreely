@@ -16,7 +16,7 @@ var allFlags = []cli.Flag{
 	},
 	&cli.StringFlag{
 		Name:     "order",
-		Usage:    "Alias of the WriteFreely collection to train on",
+		Usage:    "Markov chain order",
 		Required: false,
 		Aliases:  []string{"o"},
 	},
