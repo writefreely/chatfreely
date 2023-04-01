@@ -54,12 +54,17 @@ func fetchBlogPosts(alias, instance string) ([]writeas.Post, error) {
 	return allPosts, err
 }
 
-// BuildModel creates a model with the given order for the given collection alias.
+// BuildModel creates a model with the given order, fetching posts from the given collection via the WriteFreely API.
 func BuildModel(alias, instance string, order int) (*gomarkov.Chain, error) {
 	posts, err := fetchBlogPosts(alias, instance)
 	if err != nil {
 		return nil, err
 	}
+	return BuildModelWithPosts(posts, order)
+}
+
+// BuildModelWithPosts creates a model with the given order for the given posts.
+func BuildModelWithPosts(posts []writeas.Post, order int) (*gomarkov.Chain, error) {
 	chain := gomarkov.NewChain(order)
 	var wg sync.WaitGroup
 	wg.Add(len(posts))

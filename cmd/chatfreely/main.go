@@ -78,7 +78,7 @@ func cmdGenerate(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = chatfreely.GenerateBlogPost(chain)
+	err = chatfreely.PrintBlogPost(chain)
 	if err != nil {
 		return err
 	}
