@@ -32,6 +32,10 @@ The `-o` flag sets the order of your Markov model -- setting it to `2` makes it 
 chatfreely train -c [blog-alias] -o 2
 ```
 
+#### Using with Write.as
+
+Write.as implements rate-limiting on its post-retrieval API that [requires an application key](https://write.as/me/applications). Follow the instructions there to retrieve yours, and then set an environment variable, `WRITEAS_APP_KEY=your-app-key-here...`, before training your model. 
+
 ### Generating
 
 Finally, generate a brand new post, again specifying the order (`-o`) that you used to train the model:

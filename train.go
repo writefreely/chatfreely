@@ -12,7 +12,7 @@ import (
 func fetchBlogPosts(alias string) ([]writeas.Post, error) {
 	log.Printf("Fetching blog posts from '%s'...", alias)
 	c := writeas.NewClient()
-	c.SetApplicationKey(os.Getenv("APP_KEY"))
+	c.SetApplicationKey(os.Getenv("WRITEAS_APP_KEY"))
 	var posts *[]writeas.Post
 	var allPosts []writeas.Post
 	var err error
